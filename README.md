@@ -14,13 +14,19 @@
 
 - ### Build & Launch
 ```
-docker compose up --build -d
+docker compose -f .\docker\docker-compose.yaml up --build -d
 ```
 
 - ###### Rebuild (Drop DB and re-install)
 ~~~
-docker compose down -v  
+docker compose -f .\docker\docker-compose.yaml down -v
 ~~~
+___
+- ###### Using
+  - ###### Logs
+  ~~~
+  docker compose -f .\docker\docker-compose.yaml logs -f
+  ~~~
 ___
 ### TODO:
 - Make command-line interface

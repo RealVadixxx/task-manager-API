@@ -4,17 +4,17 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 class Base(DeclarativeBase):
     pass
 
-class User(Base):
+class UserDB(Base):
     __tablename__ = "user"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str]
 
-class Task(Base):
+class TaskDB(Base):
     __tablename__ = "task"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str]
 
-class TaskUser(Base):
+class TaskUserDB(Base):
     __tablename__ = "task_user"
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))

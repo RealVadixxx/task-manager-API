@@ -1,4 +1,4 @@
-from fastapi import APIRouter, status, Response
+from fastapi import APIRouter, status
 from database.task import (
     create_task as create_my_task,
     get_tasks as get_my_tasks,
@@ -6,21 +6,20 @@ from database.task import (
     delete_task as delete_my_task
 )
 from database.task_user import (
-    add_user2task as add_my_user2task,
-    remove_user_in_task as remove_my_user_in_task,
-    delete_task as delete_my_task_taskuser,
+    delete_task as delete_my_task_taskuser
 )
-import asyncio
+from schemas.task import TaskSchema
 
 router = APIRouter()
 
 # Create
 @router.post("/tasks/create")
-async def create_task(name: str):
+async def create_task(user_name: str):
     try:
-        task = await (create_my_task(name))
-        if task:
-            return task
+        task = TaskSchema(name = name)
+        action = await create_my_task(task)
+        if action:
+            return action
     except Exception as e:
         print(f"Something went wrong: {e}")
         return status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -38,9 +37,19 @@ async def get_tasks():
         print(f"Something went wrong: {e}")
         return status.HTTP_500_INTERNAL_SERVER_ERROR
 
+@router.get("/tasks/get")
+async def get_task(task_id: int):
+    try:
+        task = await get_my_task(task_id)
+
+        if task:
+            return task
+    except: 
+        ...
+
 # Update
 @router.patch("/tasks/edit/rename")
-async def rename_task(task_id: int, new_name: str):
+async def rename_task(task_id: int, user_name: str):
     try:
         task = await (rename_my_task(task_id, new_name)) # rename_my_task = database.task.rename_task
         if task:
@@ -48,29 +57,6 @@ async def rename_task(task_id: int, new_name: str):
     except Exception as e:
         print(f"Something went wrong: {e}")
         return status.HTTP_500_INTERNAL_SERVER_ERROR
-
-# Update
-@router.patch("/tasks/edit/users/add")
-async def add_user2task(user_id: int, task_id: int):
-    try:
-        task = await (add_my_user2task(user_id, task_id))
-        if task:
-            return task
-    except Exception as e:
-        print(f"Something went wrong: {e}")
-        return status.HTTP_500_INTERNAL_SERVER_ERROR
-
-# Update
-@router.patch("/tasks/edit/users/remove")
-async def remove_user2task(user_id: int, task_id: int):
-    try:
-        task = await (remove_my_user_in_task(user_id, task_id))
-        if task:
-            return task
-    except Exception as e:
-        print(f"Something went wrong: {e}")
-        return status.HTTP_500_INTERNAL_SERVER_ERROR
-
 
 # Delete
 @router.delete("/tasks/delete")

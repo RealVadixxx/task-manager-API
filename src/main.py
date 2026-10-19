@@ -5,7 +5,8 @@ from database.db import engine
 from database.models import Base
 
 from handlers.user import router as users_router
-from handlers.task import router as items_router
+from handlers.task import router as tasks_router
+from handlers.task_user import router as task_user_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -19,4 +20,5 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 app.include_router(users_router)
-app.include_router(items_router)
+app.include_router(tasks_router)
+app.include_router(task_user_router)

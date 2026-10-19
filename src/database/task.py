@@ -1,16 +1,16 @@
 from database.db import new_session
 from sqlalchemy import select
-from database.models import Task
+from database.models import TaskDB
+from schemas.task import TaskSchema
 
 # [Create] Create task
-async def create_task(task_name: str) -> list | None:
+async def create_task(task: TaskSchema) -> list | None:
     async with new_session() as session:
-        new_task = Task(name = task_name)
         try:
-            session.add(new_task)
+            session.add(TaskDB(name = task.name))
             await session.commit()
 
-            tasks = await session.scalars(select(Task))
+            tasks = await session.scalars(select(TaskDB))
             tasks = tasks.all()
             result = [{"id": task.id, "name": task.name} for task in tasks]
 
@@ -22,22 +22,29 @@ async def create_task(task_name: str) -> list | None:
 # [Read] Get all tasks
 async def get_tasks() -> list:
     async with new_session() as session:
-        tasks = await session.scalars(select(Task))
+        tasks = await session.scalars(select(TaskDB))
         tasks = tasks.all()
         result = [{"id": task.id, "name": task.name} for task in tasks]
 
         return result
 
+async def get_task(task_id):
+    async with new_session() as session:
+        user = await session.get(TaskDB, task_id)
+        if user:
+            return {"task_id": task.id, "task_name": task.name}
+        
+
 # [Update] Rename task
 async def rename_task(task_id: int, new_name: str) -> list | None:
     async with new_session() as session:
-        task = await session.get(Task, task_id)
+        task = await session.get(TaskSchema, task_id)
 
         if task:
             task.name = new_name
 
             await session.commit()
-            tasks = await session.scalars(select(Task))
+            tasks = await session.scalars(select(TaskDB))
             tasks = tasks.all()
             result = [{"id": task.id, "name": task.name} for task in tasks]
 
@@ -50,14 +57,14 @@ async def rename_task(task_id: int, new_name: str) -> list | None:
 # [Delete] Delete task
 async def delete_task(task_id: int) -> list | None:
     async with new_session() as session:
-        task = await session.get(Task, task_id)
+        task = await session.get(TaskSchema, task_id)
 
         if task:
             await session.delete(task)
 
             await session.commit()
 
-            tasks = await session.scalars(select(Task))
+            tasks = await session.scalars(select(TaskDB))
             tasks = tasks.all()
             result = [{"id": task.id, "name": task.name} for task in tasks]
 

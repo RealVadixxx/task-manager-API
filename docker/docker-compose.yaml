@@ -1,11 +1,10 @@
 services:
   fastapi:
     build:
-      context: .
-      dockerfile: Dockerfile
-    restart: unless-stopped
+      context: ..
+      dockerfile: docker/Dockerfile
     ports:
-      - "8000:8000"
+      - 8000:8000
     environment:
       DB_HOST: db
       DB_PORT: 5432
@@ -14,7 +13,7 @@ services:
       DB_PASSWORD: postgres
     depends_on:
       db:
-        condition: service_healthy
+        condition: service_healthy 
 
   db:
     image: postgres:17
@@ -24,16 +23,15 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
-      - "5432:5432"
+      - 5432:5432
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d task_manager"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
-    restart: unless-stopped
-
+      interval: 3s
+      timeout: 3s
+      retries: 5
 
 volumes:
   postgres_data:
+  
