@@ -1,14 +1,21 @@
-from fastapi import APIRouter, status, HTTPException
+from fastapi import APIRouter, HTTPException, status
 
+from database.task_user import delete_user as delete_my_user_taskuser
+from database.task_user import get_tasks_by_user as get_my_tasks_by_user
 from database.user import (
     create_user as create_my_user,
-    get_users as get_my_users,
-    rename_user as rename_my_user,
-    delete_user as delete_my_user
 )
-from database.task_user import (
-    get_tasks_by_user as get_my_tasks_by_user,
-    delete_user as delete_my_user_taskuser
+from database.user import (
+    delete_user as delete_my_user,
+)
+from database.user import (
+    get_user as get_my_user,
+)
+from database.user import (
+    get_users as get_my_users,
+)
+from database.user import (
+    rename_user as rename_my_user,
 )
 from schemas.user import UserSchema
 
@@ -44,10 +51,10 @@ async def get_users():
 @router.get("/users/get")
 async def get_user(user_id: int):
     try:
-        task = await get_my_user(task_id)
+        user = await get_my_user(user_id)
 
-        if task:
-            return task
+        if user:
+            return user
     except: 
         ...    
 
@@ -55,7 +62,7 @@ async def get_user(user_id: int):
 @router.patch("/users/edit/rename")
 async def rename_user(user_id: int, user_name: str):
     try:
-        action = await (rename_my_user(user_id, name)) # rename_my_user = database.task.rename_user
+        action = await (rename_my_user(user_id, user_name)) # rename_my_user = database.task.rename_user
         if action:
             return action
     except Exception as e:

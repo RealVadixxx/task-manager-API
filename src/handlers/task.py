@@ -1,13 +1,11 @@
 from fastapi import APIRouter, status
-from database.task import (
-    create_task as create_my_task,
-    get_tasks as get_my_tasks,
-    rename_task as rename_my_task,
-    delete_task as delete_my_task
-)
-from database.task_user import (
-    delete_task as delete_my_task_taskuser
-)
+
+from database.task import create_task as create_my_task
+from database.task import delete_task as delete_my_task
+from database.task import get_task as get_my_task
+from database.task import get_tasks as get_my_tasks
+from database.task import rename_task as rename_my_task
+from database.task_user import delete_task as delete_my_task_taskuser
 from schemas.task import TaskSchema
 
 router = APIRouter()
@@ -16,7 +14,7 @@ router = APIRouter()
 @router.post("/tasks/create")
 async def create_task(user_name: str):
     try:
-        task = TaskSchema(name = name)
+        task = TaskSchema(name = user_name)
         action = await create_my_task(task)
         if action:
             return action
@@ -49,9 +47,9 @@ async def get_task(task_id: int):
 
 # Update
 @router.patch("/tasks/edit/rename")
-async def rename_task(task_id: int, user_name: str):
+async def rename_task(task_id: int, task_name: str):
     try:
-        task = await (rename_my_task(task_id, new_name)) # rename_my_task = database.task.rename_task
+        task = await (rename_my_task(task_id, task_name)) # rename_my_task = database.task.rename_task
         if task:
             return task
     except Exception as e:

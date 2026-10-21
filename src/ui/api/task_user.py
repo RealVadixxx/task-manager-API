@@ -1,8 +1,7 @@
 import os
-from dotenv import load_dotenv
 
 import requests as rq
-
+from dotenv import load_dotenv
 
 load_dotenv()
 host = os.getenv("host")
@@ -18,7 +17,7 @@ def get_users_by_task(task_id: int):
     except:
         ...
 
-def get_tasks_by_users(user_id: int):
+def get_tasks_by_user(user_id: int):
     url = f"{host}/users/tasks"
     params = {
         "user_id": user_id,

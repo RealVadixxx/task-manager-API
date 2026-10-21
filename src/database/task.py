@@ -30,8 +30,8 @@ async def get_tasks() -> list:
 
 async def get_task(task_id):
     async with new_session() as session:
-        user = await session.get(TaskDB, task_id)
-        if user:
+        task = await session.get(TaskDB, task_id)
+        if task:
             return {"task_id": task.id, "task_name": task.name}
         
 
