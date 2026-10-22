@@ -1,4 +1,4 @@
-# [CLI] Team task manager (self-edu project)
+# Team task manager (self-edu project)
 #### Manage your team's tasks in light simple-using task manager
 ####
 ###### Project idea by [avito-tech/tech-internship](https://github.com/avito-tech/tech-internship)
