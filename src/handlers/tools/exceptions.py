@@ -1,4 +1,4 @@
-from src.handlers.tools.message import Error as err, Ok as ok
+from handlers.tools.message import Error as err, Ok as ok
 
 class BaseError(Exception):
     def __init__(self, error_text: str):

@@ -20,7 +20,7 @@ async def add_user2task(user_id: int, task_id: int) -> bool:
             return False
 
 # [Read] Get users, where task == ...
-async def get_users_by_task(task_id: int) -> list[UserSchema] | None:
+async def get_users_by_task(task_id: int) -> list | None:
     async with new_session() as session:
         try:
             query = (
@@ -31,7 +31,7 @@ async def get_users_by_task(task_id: int) -> list[UserSchema] | None:
             query_result = await session.execute(query)
             data = query_result.scalars().all()
 
-            result = [UserSchema(id = link.id, name = link.name) for link in data]
+            result = [UserSchema(id = link.id, name = link.name).model_dump() for link in data]
 
             return result
         except Exception as e:
@@ -40,7 +40,7 @@ async def get_users_by_task(task_id: int) -> list[UserSchema] | None:
             
 
 # [Read] Get tasks, where user == ...
-async def get_tasks_by_user(user_id: int) -> list[TaskSchema] | None:
+async def get_tasks_by_user(user_id: int) -> list | None:
     async with new_session() as session:
         try:
             query = (
@@ -51,7 +51,7 @@ async def get_tasks_by_user(user_id: int) -> list[TaskSchema] | None:
             query_result = await session.execute(query)
             data = query_result.scalars().all()
 
-            result = [TaskSchema(id = link.id, name = link.name) for link in data]
+            result = [TaskSchema(id = link.id, name = link.name).model_dump() for link in data]
 
             return result
         except Exception as e:

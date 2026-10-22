@@ -21,19 +21,19 @@ from database.user import (
 from schemas.user import UserSchema
 
 from handlers.tools import message
-from src.handlers.exceptions import UserError
+from handlers.tools.exceptions import UserError
 
 
 router = APIRouter()
 
 # Create
-@router.post("/users/create")
+@router.get("/users/create")
 async def create_user(user_name: str) -> JSONResponse:
     try:
         user = UserSchema(name = user_name)
         action = await (create_my_user(user))
         if action:
-            return message.Ok()
+            return message.Ok() # Maybe 'return message.Created()' but I do not wanna this.
         else:
             raise UserError("create_user: Error")
     except Exception as e:
@@ -47,8 +47,10 @@ async def get_users() -> JSONResponse:
         action = await (get_my_users())
 
         if action:
-            users = [UserSchema(id = user.id, name = user.name) for user in action] 
+            users = [UserSchema(id = user.id, name = user.name).model_dump() for user in action] 
             return message.Ok(users)
+        elif action == []: 
+            return message.OkBut()
         else:
             raise UserError("get_users: error")
     except Exception as e:
@@ -62,7 +64,7 @@ async def get_user(user_id: int) -> JSONResponse:
         action = await get_my_user(user_id)
 
         if action:
-            user = action
+            user = action.model_dump()
             return message.Ok(user)
         else:
             raise UserError("get_user: error")

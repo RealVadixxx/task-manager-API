@@ -10,9 +10,8 @@ from database.task_user import delete_task as delete_my_task_taskuser
 from schemas.task import TaskSchema
 
 from handlers.tools import message
-from src.handlers.exceptions import UserError
-from src.handlers.exceptions import TaskError
-
+from handlers.tools.exceptions import UserError
+from handlers.tools.exceptions import TaskError
 router = APIRouter()
 
 # Create
@@ -37,6 +36,8 @@ async def get_tasks() -> JSONResponse:
 
         if task:
             return message.Ok(task)
+        elif task == []: 
+            return message.OkBut()
         else:
             raise UserError("get_tasks: error")
     except Exception as e:
@@ -49,10 +50,10 @@ async def get_task(task_id: int) -> JSONResponse:
         task = await get_my_task(task_id)
 
         if task:
-            return message.Ok(task)
+            return message.Ok(task.model_dump())
         else:
             raise TaskError("get_task")
-    except: 
+    except Exception as e:
         print(e)
         return message.Error()
 
@@ -65,7 +66,7 @@ async def rename_task(task_id: int, task_name: str) -> JSONResponse:
             return message.Ok()
         else:
             raise TaskError("rename_task")
-    except: 
+    except Exception as e: 
         print(e)
         return message.Error()
 
@@ -78,6 +79,6 @@ async def delete_task(task_id: int) -> JSONResponse:
             return message.Ok()
         else:
             raise TaskError("delete_task")
-    except: 
+    except Exception as e: 
         print(e)
         return message.Error()

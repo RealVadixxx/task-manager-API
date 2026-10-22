@@ -1,5 +1,11 @@
-class DBError(Error):
+class BaseError(Exception):
     def __init__(self, error_text: str):
         self.error_text = error_text
-        self.message = "DB Error"
-        super().__init__(f"{self.message}: {self.error}")
+        self.callback()
+
+    def callback(self):
+        print(f"{self.__class__.__name__}: {self.error_text}")
+        return err
+
+class DBError(BaseError):
+    pass

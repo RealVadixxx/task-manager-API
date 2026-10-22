@@ -2,7 +2,7 @@ from database.db import new_session
 from sqlalchemy import select
 from database.models import TaskDB
 from schemas.task import TaskSchema
-from src.database.exceptions import DBError
+from database.exceptions import DBError
 
 # [Create] Create task
 async def create_task(task: TaskSchema) -> bool:
@@ -17,12 +17,12 @@ async def create_task(task: TaskSchema) -> bool:
             return False
 
 # [Read] Get all tasks
-async def get_tasks() -> list[TaskSchema] | None:
+async def get_tasks() -> list | None:
     async with new_session() as session:
         try:
             tasks = await session.scalars(select(TaskDB))
             tasks = tasks.all()
-            result = [TaskSchema(id = task.id, name = task.name) for task in tasks]
+            result = [TaskSchema(id = task.id, name = task.name).model_dump() for task in tasks]
             if result == [] or result:
                 return result
         except Exception as e:
