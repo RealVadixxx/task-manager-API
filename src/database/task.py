@@ -2,73 +2,81 @@ from database.db import new_session
 from sqlalchemy import select
 from database.models import TaskDB
 from schemas.task import TaskSchema
+from src.database.exceptions import DBError
 
 # [Create] Create task
-async def create_task(task: TaskSchema) -> list | None:
+async def create_task(task: TaskSchema) -> bool:
     async with new_session() as session:
         try:
             session.add(TaskDB(name = task.name))
             await session.commit()
 
-            tasks = await session.scalars(select(TaskDB))
-            tasks = tasks.all()
-            result = [{"id": task.id, "name": task.name} for task in tasks]
-
-            return result
+            return True
         except Exception as e:
-            print(f"Something went wrong: {e}")
-            return None
+            print(e)
+            return False
 
 # [Read] Get all tasks
-async def get_tasks() -> list:
+async def get_tasks() -> list[TaskSchema] | None:
     async with new_session() as session:
-        tasks = await session.scalars(select(TaskDB))
-        tasks = tasks.all()
-        result = [{"id": task.id, "name": task.name} for task in tasks]
+        try:
+            tasks = await session.scalars(select(TaskDB))
+            tasks = tasks.all()
+            result = [TaskSchema(id = task.id, name = task.name) for task in tasks]
+            if result == [] or result:
+                return result
+        except Exception as e:
+            print(e)
+            return None
 
-        return result
-
-async def get_task(task_id):
+async def get_task(task_id) -> TaskSchema | None:
     async with new_session() as session:
-        task = await session.get(TaskDB, task_id)
-        if task:
-            return {"task_id": task.id, "task_name": task.name}
+        try:
+            task = await session.get(TaskDB, task_id)
+            if task:
+                return TaskSchema(id = task.id, name = task.name)
+            else:
+                raise DBError("get_task")
+        except Exception as e:
+            print(e)
+            return None
         
 
 # [Update] Rename task
-async def rename_task(task_id: int, new_name: str) -> list | None:
+async def rename_task(task_id: int, new_name: str) -> bool:
     async with new_session() as session:
-        task = await session.get(TaskSchema, task_id)
+        try:
+            task = await session.get(TaskSchema, task_id)
 
-        if task:
-            task.name = new_name
+            if task:
+                task.name = new_name
 
-            await session.commit()
-            tasks = await session.scalars(select(TaskDB))
-            tasks = tasks.all()
-            result = [{"id": task.id, "name": task.name} for task in tasks]
+                await session.commit()
 
-            return result
+                return True
 
-        else:
-            print(f"Task #{task_id} not found")
-            return None
+            else:
+                print(f"Task #{task_id} not found")
+                return False
+        except Exception as e:
+            print(e)
+            return False
 
 # [Delete] Delete task
-async def delete_task(task_id: int) -> list | None:
+async def delete_task(task_id: int) -> bool:
     async with new_session() as session:
-        task = await session.get(TaskSchema, task_id)
+        try:
+            task = await session.get(TaskSchema, task_id)
 
-        if task:
-            await session.delete(task)
+            if task:
+                await session.delete(task)
 
-            await session.commit()
+                await session.commit()
 
-            tasks = await session.scalars(select(TaskDB))
-            tasks = tasks.all()
-            result = [{"id": task.id, "name": task.name} for task in tasks]
-
-            return result
-        else:
-            print(f"Task #{task_id} not found")
-            return None
+                return True
+            else:
+                print(f"Task #{task_id} not found")
+                return False
+        except Exception as e:
+            print(e)
+            return False

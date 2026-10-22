@@ -4,7 +4,7 @@ from database.models import UserDB
 from schemas.user import UserSchema
 
 # [Create] Create user
-async def create_user(user: UserSchema) -> list | None:
+async def create_user(user: UserSchema) -> bool:
     async with new_session() as session:
         try:
             new_user = UserDB(name = user.name)
@@ -12,65 +12,71 @@ async def create_user(user: UserSchema) -> list | None:
 
             await session.commit()
 
-            users = await session.scalars(select(UserDB))
-            users = users.all()
-            result = [{"id": user.id, "name": user.name} for user in users]
-
-            return result
+            return True
         except Exception as e:
-            print(f"Something went wrong: {e}")
-            return None
+            print(e)
+            return False
 
 # [Read] Get all users
-async def get_users() -> list:
+async def get_users() -> list[UserSchema] | None:
     async with new_session() as session:
-        users = await session.scalars(select(UserDB))
-        users = users.all()
+        try:
+            users = await session.scalars(select(UserDB))
+            users = users.all()
 
-        result = [{"id": user.id, "name": user.name} for user in users]
-        return result
+            result = [UserSchema(id = user.id, name = user.name) for user in users]
+            
+            return result
+        except Exception as e:
+            print(e)
+            return None
 
-async def get_user(user_id):
+async def get_user(user_id) -> UserSchema | None:
     async with new_session() as session:
-        user = await session.get(UserDB, user_id)
-        if user:
-            return {"user_id": user.id, "user_name": user.name}
+        try:
+            user = await session.get(UserDB, user_id)
+            if user:
+                return UserSchema(id = user.id, name = user.name)
+        except Exception as e:
+            print(e)
+            return None
         
 # [Update] Rename user
-async def rename_user(user_id: int, new_name: str) -> list | None:
+async def rename_user(user_id: int, new_name: str) -> bool:
     async with new_session() as session:
-        user = await session.get(UserDB, user_id)
+        try:
+            user = await session.get(UserDB, user_id)
 
-        if user:
-            user.name = new_name
+            if user:
+                user.name = new_name
 
-            await session.commit()
+                await session.commit()
 
-            users = await session.scalars(select(UserDB))
-            users = users.all()
-            result = [{"id": user.id, "name": user.name} for user in users]
+                return True
 
-            return result
-
-        else:
-            print(f"User #{user_id} not found")
-            return None
+            else:
+                print(f"User #{user_id} not found")
+                return False
+        except Exception as e:
+            print(e)
+            return False
 
 # [Delete] Delete user
-async def delete_user(user_id: int) -> list | None:
+async def delete_user(user_id: int) -> bool:
     async with new_session() as session:
-        user = await session.get(UserDB, user_id)
-
-        if user:
-            await session.delete(user)
-
-            await session.commit()
-            users = await session.scalars(select(UserDB))
-            users = users.all()
-            result = [{"id": user.id, "name": user.name} for user in users]
-
-            return result
-
-        else:
-            print(f"User #{user_id} not found")
-            return None
+        try:
+            user = await session.get(UserDB, user_id)
+    
+            if user:
+                await session.delete(user)
+    
+                await session.commit()
+                
+                return True
+    
+            else:
+                print(f"User #{user_id} not found")
+                return False
+        except Exception as e:
+            print(e)
+            return False

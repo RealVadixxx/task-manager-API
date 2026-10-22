@@ -1,2 +1,0 @@
-from ascii import text
-

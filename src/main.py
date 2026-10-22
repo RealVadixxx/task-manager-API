@@ -23,3 +23,7 @@ app = FastAPI(lifespan=lifespan)
 app.include_router(users_router)
 app.include_router(tasks_router)
 app.include_router(task_user_router)
+
+@app.get("/")
+def main_page():
+    return {"status": "ok"}
