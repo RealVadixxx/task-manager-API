@@ -29,13 +29,5 @@ ___
   ~~~
 ___
 ### TODO:
-- Make command-line interface
-  - Main menu (home)
-    - Tasks with connected users
-  - Task manager
-    - Create / Remove / Manage (add/remove user) task
-  - User manager
-    - Create / Remove / Manage (add/remove task) user
-  
 - Tests
 - Update/upgrade README.md
