@@ -17,8 +17,22 @@
 docker compose -f .\docker\docker-compose.yaml up --build -d
 ```
 
-- ## Using
+## Using
+### Endpoints
+ - GET /users
+ - GET /users/tasks
+ - GET /users/get 
+ - POST /users/create
+ - PATCH /users/edit/rename
+ - DELETE /users/delete
 
-___
-### TODO:
-- Update/upgrade README.md
+ - GET /tasks
+ - GET /tasks/users
+ - GET /tasks/get
+ - POST /tasks/create
+ - PATCH /tasks/edit/rename
+ - PATCH /tasks/edit/users/add
+ - PATCH /tasks/edit/users/remove
+ - DELETE /tasks/delete
+
+~~~
