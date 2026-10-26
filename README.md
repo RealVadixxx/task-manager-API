@@ -17,17 +17,8 @@
 docker compose -f .\docker\docker-compose.yaml up --build -d
 ```
 
-- ###### Rebuild (Drop DB and re-install)
-~~~
-docker compose -f .\docker\docker-compose.yaml down -v
-~~~
-___
-- ###### Using
-  - ###### Logs
-  ~~~
-  docker compose -f .\docker\docker-compose.yaml logs -f
-  ~~~
+- ## Using
+
 ___
 ### TODO:
-- Tests
 - Update/upgrade README.md

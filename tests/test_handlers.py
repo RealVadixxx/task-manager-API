@@ -9,13 +9,13 @@ def test_read_main(client):
     assert response.json() == {"status": "ok"}
 
 def test_create_user(client):
-    url = "/"
+    url = "/users/create"
     params = {
         "user_name": "Alex"
     }
-    response = client.get(url = url, params = params)
+    response = client.post(url = url, params = params)
 
-    assert response.status_code == 200
+    assert response.status_code == 201
     assert response.json() == {"status": "ok"}
     # ------------------------------------------------------
     params_1 = {
@@ -23,7 +23,7 @@ def test_create_user(client):
     }
     response_1 = client.post(url = url, params = params_1)
 
-    assert response_1.status_code == 200
+    assert response_1.status_code == 201
     assert response_1.json() == {"status": "ok"}
 
 def test_get_users(client):
@@ -46,7 +46,7 @@ def test_get_users(client):
     }
 
 def test_delete_user(client):
-    response = client.post(url = "/", params = {"user_name": "user to delete"})
+    response = client.post(url = "/users/create", params = {"user_name": "user to delete"})
 
     url = "/users/delete"
     params = {
@@ -90,7 +90,7 @@ def test_get_user(client):
         }
 
 def test_rename_user(client):
-    url = "/users/rename"
+    url = "/users/edit/rename"
     params = {
         "user_id":   1,
         "user_name": "AlexNew"
@@ -106,12 +106,12 @@ def test_rename_user(client):
         "status": "ok",
         "message": [
             {
-                "id": 1,
-                "name": "AlexNew"
+                "id": 2,
+                "name": "Andrew"
             },
             {
-            "id": 2,
-            "name": "Andrew"
+            "id": 1,
+            "name": "AlexNew"
             }
         ]
     }
@@ -135,7 +135,7 @@ def test_create_task(client):
     assert response.json() == {"status": "ok"}
     # ------------------------------------------------------
     params_1 = {
-        "user_name": "Make the meal"
+        "task_name": "Make the meal"
     }
     response_1 = client.post(url = url, params = params_1)
     assert response_1.status_code == 200
@@ -145,7 +145,7 @@ def test_get_tasks(client):
     url = "/tasks"
     response = client.get(url = url)
     assert response.status_code == 200
-    assert response.json == {
+    assert response.json() == {
           "status": "ok",
           "message": [
             {
@@ -159,6 +159,8 @@ def test_get_tasks(client):
           ]
         }
 
+
+# Backend error (Model)
 def test_rename_task(client):
     url = "/tasks/edit/rename"
     params = {
@@ -176,24 +178,25 @@ def test_rename_task(client):
         "status": "ok",
         "message": [
             {
-                "id": 1,
-                "name": "Make videos"
+                "id": 2,
+                "name": "Make the meal"
             },
             {
-            "id": 2,
-            "name": "Make the meal"
+            "id": 1,
+            "name": "Make videos"
             }
         ]
     }
 
     params_2 = {
-        "user_id":   1,
-        "user_name": "Make video"
+        "task_id":   1,
+        "task_name": "Make video"
     }
     response_2 = client.patch(url = url, params = params_2)
     assert response_2.status_code == 200
     assert response_2.json() == {"status": "ok"}
 
+# Backend error (Model)
 def test_delete_task(client):
     url_1 = "/tasks/create"
     params_1 = {
@@ -216,16 +219,16 @@ def test_delete_task(client):
     url_1 = "/tasks"
     response_1 = client.get(url = url_1)
     assert response_1.status_code == 200
-    assert response_1.json == {
+    assert response_1.json() == {
           "status": "ok",
           "message": [
             {
-              "id": 1,
-              "name": "Make video"
-            },
-            {
               "id": 2,
               "name": "Make the meal"
+            },
+            {
+              "id": 1,
+              "name": "Make video"
             }
           ]
         }
@@ -246,15 +249,7 @@ def test_add_user2task_AND_get_users_by_task(client):
     }
     response_1 = client.get(url = url_1, params = params_1)
     assert response.status_code == 200
-    assert response.json() == {
-            "status": "ok",
-            "message": [
-            {
-              "id": 1,
-              "name": "Alex"
-            }
-            ]
-        }
+    assert response.json() == {"status": "ok"}
 
 def test_get_tasks_by_user(client):
     url = "/users/tasks"

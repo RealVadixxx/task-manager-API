@@ -27,13 +27,13 @@ from handlers.tools.exceptions import UserError
 router = APIRouter()
 
 # Create
-@router.get("/users/create")
+@router.post("/users/create")
 async def create_user(user_name: str) -> JSONResponse:
     try:
         user = UserSchema(name = user_name)
         action = await (create_my_user(user))
         if action:
-            return message.Ok() # Maybe 'return message.Created()' but I do not wanna this.
+            return message.Created() # Maybe 'return message.Created()' but I do not wanna this.
         else:
             raise UserError("create_user: Error")
     except Exception as e:
@@ -66,6 +66,8 @@ async def get_user(user_id: int) -> JSONResponse:
         if action:
             user = action.model_dump()
             return message.Ok(user)
+        elif action == None:
+            return message.OkBut()
         else:
             raise UserError("get_user: error")
     except Exception as e: 

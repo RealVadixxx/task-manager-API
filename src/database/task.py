@@ -46,7 +46,7 @@ async def get_task(task_id) -> TaskSchema | None:
 async def rename_task(task_id: int, new_name: str) -> bool:
     async with new_session() as session:
         try:
-            task = await session.get(TaskSchema, task_id)
+            task = await session.get(TaskDB, task_id)
 
             if task:
                 task.name = new_name
@@ -66,7 +66,7 @@ async def rename_task(task_id: int, new_name: str) -> bool:
 async def delete_task(task_id: int) -> bool:
     async with new_session() as session:
         try:
-            task = await session.get(TaskSchema, task_id)
+            task = await session.get(TaskDB, task_id)
 
             if task:
                 await session.delete(task)
