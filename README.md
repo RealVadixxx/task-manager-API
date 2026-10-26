@@ -19,22 +19,6 @@ docker compose -f .\docker\docker-compose.yaml up --build -d
 
 ## Using
 ### Endpoints
- - GET /users
- - GET /users/tasks
- - GET /users/get 
- - POST /users/create
- - PATCH /users/edit/rename
- - DELETE /users/delete
-
- - GET /tasks
- - GET /tasks/users
- - GET /tasks/get
- - POST /tasks/create
- - PATCH /tasks/edit/rename
- - PATCH /tasks/edit/users/add
- - PATCH /tasks/edit/users/remove
- - DELETE /tasks/delete
-
 <details>
 <summary><b>GET /users</b> — Получить пользователей</summary>
 
