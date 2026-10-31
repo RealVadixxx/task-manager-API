@@ -1,0 +1,70 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredPackages">
+        <list>
+          <option value="joblib" />
+          <option value="numba" />
+          <option value="numpy" />
+          <option value="scipy" />
+          <option value="librosa" />
+          <option value="llvmlite" />
+          <option value="fairseq" />
+          <option value="faiss-cpu" />
+          <option value="gradio" />
+          <option value="Cython" />
+          <option value="pydub" />
+          <option value="soundfile" />
+          <option value="ffmpeg-python" />
+          <option value="tensorboardX" />
+          <option value="Jinja2" />
+          <option value="json5" />
+          <option value="Markdown" />
+          <option value="matplotlib" />
+          <option value="matplotlib-inline" />
+          <option value="praat-parselmouth" />
+          <option value="Pillow" />
+          <option value="resampy" />
+          <option value="scikit-learn" />
+          <option value="starlette" />
+          <option value="tensorboard" />
+          <option value="tqdm" />
+          <option value="tornado" />
+          <option value="Werkzeug" />
+          <option value="uc-micro-py" />
+          <option value="sympy" />
+          <option value="tabulate" />
+          <option value="PyYAML" />
+          <option value="pyasn1" />
+          <option value="pyasn1-modules" />
+          <option value="fsspec" />
+          <option value="absl-py" />
+          <option value="audioread" />
+          <option value="uvicorn" />
+          <option value="colorama" />
+          <option value="pyworld" />
+          <option value="httpx" />
+          <option value="torchcrepe" />
+          <option value="django" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyPep8Inspection" enabled="true" level="INFORMATION" enabled_by_default="true">
+      <option name="ignoredErrors">
+        <list>
+          <option value="E302" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyPep8NamingInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="ignoredErrors">
+        <list>
+          <option value="N802" />
+          <option value="N806" />
+          <option value="N803" />
+        </list>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>
