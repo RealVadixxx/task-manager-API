@@ -65,8 +65,8 @@ async def rename_user(user_id: int, new_name: str) -> bool:
     async with new_session() as session:
         try:
             user = await session.get(UserDB, user_id)
-            old_name = user.name
             if user:
+                old_name = user.name
                 user.name = new_name
 
                 await session.commit()

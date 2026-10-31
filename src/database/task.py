@@ -1,16 +1,18 @@
 import logging
 
-from sqlalchemy.exc import IntegrityError, OperationalError
-from database.db import new_session
 from sqlalchemy import select
-from database.models import TaskDB
-from schemas.task import TaskSchema
+from sqlalchemy.exc import IntegrityError, OperationalError
+
+from src.database.db import new_session
+from src.database.models import TaskDB
+
+from src.schemas.task import TaskSchema, TaskCreate, TaskGet, TaskRename, TaskDelete
 
 logger = logging.getLogger("task_manager")
 
 
 # [Create] Create task
-async def create_task(task: TaskSchema) -> bool:
+async def create_task(task: TaskCreate) -> bool:
     async with new_session() as session:
         try:
             session.add(TaskDB(name = task.name))
@@ -43,39 +45,40 @@ async def get_tasks() -> list | None:
             logger.error(f"Ошибка подключения к БД | {e}")
             return False
 
-async def get_task(task_id) -> TaskSchema | None:
+async def get_task(task: TaskGet) -> TaskSchema | None:
     async with new_session() as session:
         try:
-            task = await session.get(TaskDB, task_id)
-            if task:
-                logger.info(f"DB | Get Task | Task: {task.id, task.name}")
-                return TaskSchema(id = task.id, name = task.name)
+            action = await session.get(TaskDB, task.id)
+            if action:
+                logger.info(f"DB | Get Task | Task: {task.id}")
+                return TaskSchema(id = task.id, name = action.name)
             else:
                 raise IntegrityError
         except IntegrityError as e:
             await session.rollback()
             logger.error(f"Ошибка целостности БД | {e}")
-            return False
+            return None
         except OperationalError as e:
             logger.error(f"Ошибка подключения к БД | {e}")
-            return False
+            return None
         
 
 # [Update] Rename task
-async def rename_task(task_id: int, new_name: str) -> bool:
+async def rename_task(task: TaskRename) -> bool:
     async with new_session() as session:
         try:
-            task = await session.get(TaskDB, task_id)
-            old_name = task.name
+            query = await session.get(TaskDB, task.id)
             if task:
-                task.name = new_name
+                old_name = query.name
+                new_name = task.name
+                query.name = task.name
 
                 await session.commit()
-                logger.info(f"DB | Rename Task | ID: {task_id} | Name: {old_name} -> {task.name}")
+                logger.info(f"DB | Rename Task | ID: {task.id} | Name: {old_name} -> {new_name}")
                 return True
 
             else:
-                print(f"Task #{task_id} not found")
+                logger.error(f"DB | Rename Task | Task #{task.id} not found")
                 return False
         except IntegrityError as e:
             await session.rollback()
@@ -86,19 +89,18 @@ async def rename_task(task_id: int, new_name: str) -> bool:
             return False
 
 # [Delete] Delete task
-async def delete_task(task_id: int) -> bool:
+async def delete_task(task: TaskDelete) -> bool:
     async with new_session() as session:
         try:
-            task = await session.get(TaskDB, task_id)
-            task_name = task.name
+            task = await session.get(TaskDB, task.id)
             if task:
                 await session.delete(task)
 
                 await session.commit()
-                logger.info(f"DB | Delete Task | Task: {task_id, task_name}")
+                logger.info(f"DB | Delete Task | Task: {task.id}")
                 return True
             else:
-                print(f"Task #{task_id} not found")
+                print(f"Task #{task.id} not found")
                 return False
         except IntegrityError as e:
             await session.rollback()

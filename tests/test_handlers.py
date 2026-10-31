@@ -248,8 +248,8 @@ def test_add_user2task_AND_get_users_by_task(client):
         "task_id": 1
     }
     response_1 = client.get(url = url_1, params = params_1)
-    assert response.status_code == 200
-    assert response.json() == {"status": "ok"}
+    assert response_1.status_code == 200
+    assert response_1.json() == {"status": "ok"}
 
 def test_get_tasks_by_user(client):
     url = "/users/tasks"

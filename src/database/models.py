@@ -17,5 +17,5 @@ class TaskDB(Base):
 class TaskUserDB(Base):
     __tablename__ = "task_user"
     id: Mapped[int] = mapped_column(primary_key=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
-    task_id: Mapped[int] = mapped_column(ForeignKey("task.id"))
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), primary_key=True)
+    task_id: Mapped[int] = mapped_column(ForeignKey("task.id"), primary_key=True)

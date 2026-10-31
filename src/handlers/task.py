@@ -1,19 +1,14 @@
-from fastapi import APIRouter, status
-from fastapi.responses import JSONResponse
-from fastapi.exceptions import HTTPException, RequestValidationError
 import logging
 
-from database.task import create_task as create_my_task
-from database.task import delete_task as delete_my_task
-from database.task import get_task as get_my_task
-from database.task import get_tasks as get_my_tasks
-from database.task import rename_task as rename_my_task
-from database.task_user import delete_task as delete_my_task_taskuser
-from schemas.task import TaskSchema
+from fastapi import APIRouter, status
+from fastapi.responses import JSONResponse
+from fastapi.exceptions import RequestValidationError
 
-from handlers.tools import message
-from handlers.tools.exceptions import UserError
-from handlers.tools.exceptions import TaskError
+from src.services import task as svc
+from src.schemas.task import TaskCreate, TaskGet, TaskRename, TaskDelete
+from src.handlers.tools.message import Ok, OkBut, Created, Error, ValidationError
+
+
 
 
 router = APIRouter()
@@ -21,103 +16,89 @@ logger = logging.getLogger("task_manager")
 
 # Create
 @router.post("/tasks/create")
-async def create_task(task_name: str) -> JSONResponse:
+async def create_task(task: TaskCreate) -> JSONResponse:
     try:
-        task = TaskSchema(name = task_name)
-        action = await create_my_task(task)
+        action = await svc.create_task(task)
         if action:
-            logger.info(f"API | Create task | Name: {task_name}")
-            return message.Ok()
+            return Created()
         else:
-            raise Exception("Create Task")
+            return Error()
     except RequestValidationError as e:
-        logger.warning(f"Create Task Validation Error | {e}")
-        return JSONResponse(status_code = status.HTTP_400_BAD_REQUEST,
-                            content = None)
+        logger.warning(f"handlers/task/create_task | Validation Error | {e}")
+        return ValidationError()
     except Exception as e:
-        logger.critical(f"Create Task Unknown Error | {e}")
-        return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                            content=None)
+        logger.critical(f"handlers/task/create_task | Unknown Error | {e}")
+        return Error()
 
 # Read
 @router.get("/tasks")
 async def get_tasks() -> JSONResponse:
     try:
-        task = await (get_my_tasks())
-
-        if task:
+        action = await svc.get_tasks()
+        if action:
+            result = action
             logger.info(f"API | Get tasks")
-            return message.Ok(task)
-        elif task == []:
-            logger.info(f"API | Get tasks")
-            return message.OkBut()
+            return Ok(result)
         else:
-            raise Exception("Get_Task")
+            return OkBut()
     except RequestValidationError as e:
-        logger.warning(f"Get Tasks Validation Error | {e}")
+        logger.warning(f"handlers/task/get_tasks | Validation Error | {e}")
         return JSONResponse(status_code = status.HTTP_400_BAD_REQUEST,
                             content = None)
     except Exception as e:
-        logger.critical(f"Get Tasks Unknown Error | {e}")
-        return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                            content=None)
+        logger.critical(f"handlers/task/get_tasks | Unknown Error | {e}")
+        return Error()
 
 @router.get("/tasks/get")
-async def get_task(task_id: int) -> JSONResponse:
+async def get_task(task: TaskGet) -> JSONResponse:
     try:
-        task = await get_my_task(task_id)
-
-        if task:
-            logger.info(f"API | Get task | ID: {task_id}")
-            return message.Ok(task.model_dump())
+        action = await svc.get_task(task)
+        if action:
+            result = action
+            logger.info(f"handlers/task/get_task | ID: {task.id}")
+            return Ok(result)
         else:
-            raise TaskError("get_task")
+            return OkBut()
     except RequestValidationError as e:
-        logger.warning(f"Get Task Validation Error | {e}")
-        return JSONResponse(status_code = status.HTTP_400_BAD_REQUEST,
-                            content = None)
+        logger.warning(f"handlers/task/get_task | Validation Error | {e}")
+        return Error()
     except Exception as e:
-        logger.critical(f"Get  Task Unknown Error | {e}")
-        return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                            content=None)
+        logger.critical(f"handlers/task/get_task | Unknown Error | {e}")
+        return Error()
 
 
 # Update
 @router.patch("/tasks/edit/rename")
-async def rename_task(task_id: int, task_name: str) -> JSONResponse:
+async def rename_task(task: TaskRename) -> JSONResponse:
     try:
-        task = await (rename_my_task(task_id, task_name)) # rename_my_task = database.task.rename_task
-        if task:
-            logger.info(f"API | Rename task | ID: {task_id}")
-            return message.Ok()
+        action = await svc.rename_task(task)
+        if action:
+            logger.info(f"handlers/task/rename_task | ID: {task.id}, New name: {task.new_name}")
+            return Ok()
         else:
-            raise TaskError("rename_task")
+            raise Exception("No 'action'")
     except RequestValidationError as e:
-        logger.warning(f"Rename Task Validation Error | {e}")
-        return JSONResponse(status_code = status.HTTP_400_BAD_REHTTP_500_INTERNAL_SERVER_ERROR,
-                            content = None)
+        logger.warning(f"handlers/task/rename_task | Validation Error | {e}")
+        return Error()
     except Exception as e:
-        logger.critical(f"Rename Task Unknown Error | {e}")
-        return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                            content=None)
+        logger.critical(f"handlers/task/rename_task | Unknown Error | {e}")
+        return Error()
 
 
 # Delete
 @router.delete("/tasks/delete")
-async def delete_task(task_id: int) -> JSONResponse:
+async def delete_task(task: TaskDelete) -> JSONResponse:
     try:
-        task = await (delete_my_task(task_id)) and await delete_my_task_taskuser(task_id)
-        if task:
-            logger.info(f"API | Delete task | ID: {task_id}")
-            return message.Ok()
+        action = svc.delete_task(task)
+        if action:
+            logger.info(f"handlers/task/rename_task | ID: {task.id}")
+            return Ok()
         else:
-            raise TaskError("delete_task")
+            raise Exception("No 'action'")
     except RequestValidationError as e:
-        logger.warning(f"Delete Task Validation Error | {e}")
-        return JSONResponse(status_code = status.HTTP_400_BAD_REQUEST,
-                            content = None)
+        logger.warning(f"handlers/task/delete_task | Validation Error | {e}")
+        return Error()
     except Exception as e:
-        logger.critical(f"Delete Task Unknown Error | {e}")
-        return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                            content=None)
+        logger.critical(f"handlers/task/delete_task | Unknown Error | {e}")
+        return Error()
 

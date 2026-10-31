@@ -2,27 +2,26 @@ import logging
 from fastapi import APIRouter, HTTPException, status
 from fastapi.responses import JSONResponse
 
-from database.task_user import delete_user as delete_my_user_taskuser
-from database.task_user import get_tasks_by_user as get_my_tasks_by_user
-from database.user import (
+from src.database.task_user import delete_user as delete_my_user_taskuser
+from src.database.user import (
     create_user as create_my_user,
 )
-from database.user import (
+from src.database.user import (
     delete_user as delete_my_user,
 )
-from database.user import (
+from src.database.user import (
     get_user as get_my_user,
 )
-from database.user import (
+from src.database.user import (
     get_users as get_my_users,
 )
-from database.user import (
+from src.database.user import (
     rename_user as rename_my_user,
 )
-from schemas.user import UserSchema
+from src.schemas.user import UserSchema
 
-from handlers.tools import message
-from handlers.tools.exceptions import UserError
+from src.handlers.tools import message
+from src.handlers.tools.exceptions import UserError
 
 logger = logging.getLogger("task_manager")
 router = APIRouter()
@@ -93,7 +92,8 @@ async def rename_user(user_id: int, user_name: str) -> JSONResponse:
 @router.delete("/users/delete")
 async def delete_user(user_id: int):
     try:
-        action = await (delete_my_user(user_id)) and await delete_my_user_taskuser(user_id)
+        action = await delete_my_user_taskuser(user_id) and await delete_my_user(user_id)
+
         if action:
             return message.Ok()
         else:
