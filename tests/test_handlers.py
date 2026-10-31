@@ -277,3 +277,57 @@ def test_remove_user_from_task(client):
     response = client.patch(url = url, params = params)
     assert response.status_code == 200
     assert response.json() == {"status": "ok"}
+
+def test_end_tests(client):
+    # Check start position
+    users = {"status": "ok","message": [{"id": 2,"name": "Andrew"},{"id": 1,"name": "Alex"}]}
+    tasks = {"status": "ok","message": [{"id": 2,"name": "Make the meal"},{"id": 1,"name": "Make video"}]}
+    get_users_url = "/users"
+    get_users_response = client.get(url=get_users_url)
+    get_tasks_url = "/tasks"
+    get_tasks_response = client.get(url=get_tasks_url)
+    assert get_users_response.status_code == 200
+    assert get_users_response.json() == users
+    assert get_tasks_response.status_code == 200
+    assert get_tasks_response.json() == tasks
+
+    # Deleting all
+    delete_user_url = "/users/delete"
+    params_1 = {
+        "user_id": 1
+    }
+    params_2 = {
+        "user_id": 2
+    }
+    delete_user_response_1 = client.delete(url=delete_user_url, params=params_1)
+    delete_user_response_2 = client.delete(url=delete_user_url, params=params_2)
+    assert delete_user_response_1.status_code == 200
+    assert delete_user_response_1.json() == {"status": "ok"}
+    assert delete_user_response_2.status_code == 200
+    assert delete_user_response_2.json() == {"status": "ok"}
+
+
+    delete_task_url = "/tasks/delete"
+    params_1 = {
+        "task_id": 1
+    }
+    params_2 = {
+        "task_id": 2
+    }
+    delete_task_response_1 = client.delete(url=delete_task_url, params=params_1)
+    delete_task_response_2 = client.delete(url=delete_task_url, params=params_2)
+    assert delete_task_response_1.status_code == 200
+    assert delete_task_response_1.json() == {"status": "ok"}
+    assert delete_task_response_2.status_code == 200
+    assert delete_task_response_2.json() == {"status": "ok"}
+
+    # Check delete operations
+    general_response = {"status": "ok",  "message": []}
+    get_users_url = "/users"
+    get_users_response = client.get(url=get_users_url)
+    get_tasks_url = "/tasks"
+    get_tasks_response = client.get(url=get_tasks_url)
+    assert get_users_response.status_code == 200
+    assert get_users_response.json() == general_response
+    assert get_tasks_response.status_code == 200
+    assert get_tasks_response.json() == general_response
