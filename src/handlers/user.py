@@ -1,3 +1,4 @@
+import logging
 from fastapi import APIRouter, HTTPException, status
 from fastapi.responses import JSONResponse
 
@@ -23,7 +24,7 @@ from schemas.user import UserSchema
 from handlers.tools import message
 from handlers.tools.exceptions import UserError
 
-
+logger = logging.getLogger("task_manager")
 router = APIRouter()
 
 # Create

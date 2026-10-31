@@ -1,4 +1,5 @@
 from contextlib import asynccontextmanager
+import logging
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -9,16 +10,21 @@ from handlers.task import router as tasks_router
 from handlers.task_user import router as task_user_router
 from handlers.user import router as users_router
 
+import logging.config
+from logger import LoggerConf
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     async with engine.begin() as connection:
         await connection.run_sync(Base.metadata.create_all)
+        logging.config.dictConfig(LoggerConf().model_dump())
 
     yield
 
     await engine.dispose()
 
+logger = logging.getLogger("task_manager")
 app = FastAPI(lifespan=lifespan)
 
 origins = [

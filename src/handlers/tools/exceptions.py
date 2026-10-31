@@ -1,4 +1,10 @@
+import logging
+from fastapi.exceptions import RequestValidationError
+
 from handlers.tools.message import Error as err, Ok as ok
+
+
+logger = logging.getLogger("task_manager")
 
 class BaseError(Exception):
     def __init__(self, error_text: str):
